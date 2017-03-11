@@ -22,7 +22,7 @@ import java.text.*;
 public class AbaloneTest {
     private static Instance[] instances = initializeInstances();
 
-    private static int inputLayer = 7, hiddenLayer = 5, outputLayer = 1, trainingIterations = 1000;
+    private static int trainingIterations = 1000;
     private static BackPropagationNetworkFactory factory = new BackPropagationNetworkFactory();
     
     private static ErrorMeasure measure = new SumOfSquaresError();
@@ -41,7 +41,7 @@ public class AbaloneTest {
     public static void main(String[] args) {
         for(int i = 0; i < oa.length; i++) {
             networks[i] = factory.createClassificationNetwork(
-                new int[] {inputLayer, hiddenLayer, outputLayer});
+                new int[] {18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18});
             nnop[i] = new NeuralNetworkOptimizationProblem(set, networks[i], measure);
         }
 
@@ -109,7 +109,7 @@ public class AbaloneTest {
         double[][][] attributes = new double[4177][][];
 
         try {
-            BufferedReader br = new BufferedReader(new FileReader(new File("src/opt/test/abalone.txt")));
+            BufferedReader br = new BufferedReader(new FileReader(new File("src/opt/test/2016_New_Coder_Survey.csv")));
 
             for(int i = 0; i < attributes.length; i++) {
                 Scanner scan = new Scanner(br.readLine());
