@@ -169,6 +169,9 @@ public class NewCoderSurveySATest95 {
             }
             
             for (int j = 0; j < testInstances.length; j++) {
+                network.setInputValues(testInstances[j].getData());
+                network.run();
+                
                 Instance output = testInstances[j].getLabel(), example = new Instance(network.getOutputValues());
                 example.setLabel(new Instance(Double.parseDouble(network.getOutputValues().toString())));
                 testError += measure.value(output, example);
