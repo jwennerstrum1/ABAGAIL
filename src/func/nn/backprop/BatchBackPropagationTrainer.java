@@ -51,6 +51,7 @@ public class BatchBackPropagationTrainer extends NetworkTrainer {
             network.setOutputErrors(errors);
             network.backpropagate();
         }
+        System.out.println(error);
         network.updateWeights(rule);
         network.clearError();
         return error / patterns.size();
