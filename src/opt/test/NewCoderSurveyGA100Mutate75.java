@@ -3,9 +3,8 @@ package opt.test;
 import func.nn.feedfwd.FeedForwardNetwork;
 import func.nn.feedfwd.FeedForwardNeuralNetworkFactory;
 import opt.OptimizationAlgorithm;
-import opt.RandomizedHillClimbing;
-import opt.SimulatedAnnealing;
 import opt.example.NeuralNetworkOptimizationProblem;
+import opt.ga.StandardGeneticAlgorithm;
 import shared.DataSet;
 import shared.ErrorMeasure;
 import shared.Instance;
@@ -29,10 +28,10 @@ import java.util.Scanner;
  * @author Hannah Lau
  * @version 1.0
  */
-public class NewCoderSurveyIterationsRHCTest {
+public class NewCoderSurveyGA100Mutate75 {
     private static Instance[] instances = initializeInstances();
 
-    private static int inputLayer = 4, outputLayer = 1, trainingIterations = 1000;
+    private static int inputLayer = 4, outputLayer = 1, trainingIterations = 200;
     private static FeedForwardNeuralNetworkFactory factory = new FeedForwardNeuralNetworkFactory();
     
     private static ErrorMeasure measure = new SumOfSquaresError();
@@ -75,7 +74,7 @@ public class NewCoderSurveyIterationsRHCTest {
 
         //oa[0] = new RandomizedHillClimbing(nnop[0]);
         //oa[1] = new SimulatedAnnealing(1E11, .95, nnop[1]);
-        //oa[2] = new StandardGeneticAlgorithm(200, 100, 10, nnop[2]);
+        //oa[2] = new StandardGeneticAlgorithm(50, 100, 10, nnop[2]);
 
         for (int k = 0; k < 3; k++) {
             new RandomOrderFilter().filter(set);
@@ -90,11 +89,11 @@ public class NewCoderSurveyIterationsRHCTest {
                 nnop[i] = new NeuralNetworkOptimizationProblem(train, networks[i], measure);
             }
             
-            oa[0] = new RandomizedHillClimbing(nnop[0]);
-            //oa[1] = new SimulatedAnnealing(1E11, .95, nnop[1]);
-            //oa[2] = new StandardGeneticAlgorithm(200, 100, 10, nnop[2]);
+            //oa[0] = new RandomizedHillClimbing(nnop[0]);
+            //oa[1] = new SimulatedAnnealing(1E11, .35, nnop[1]);
+            oa[2] = new StandardGeneticAlgorithm(100, 50, 75, nnop[2]);
             
-            for (int i = 0; i < 1; i++) {
+            for (int i = 2; i < 3; i++) {
                 double start = System.nanoTime(), end, trainingTime, testingTime, correct = 0, incorrect = 0;
                 train(oa[i], networks[i], oaNames[i], train, test); //trainer.train();
                 end = System.nanoTime();
@@ -179,7 +178,7 @@ public class NewCoderSurveyIterationsRHCTest {
                 //lastError = error;
             }
 
-            System.out.println("Iteration " + String.format("%04d", i) + ": " + df.format(trainError / (double) 5021) + " " + df.format(testError / (double) 2152));
+            System.out.println("Iteration " + String.format("%04d" ,i) + ": " + df.format(trainError / (double) 5021) + " " + df.format(testError / (double) 2152));
             oaResultsTrain.get(i).add(trainError);
             oaResultsTest.get(i).add(testError);
         }

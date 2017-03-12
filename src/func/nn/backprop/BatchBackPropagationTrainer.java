@@ -5,6 +5,8 @@ import shared.GradientErrorMeasure;
 import shared.Instance;
 import func.nn.NetworkTrainer;
 
+import java.text.DecimalFormat;
+
 /**
  * A standard batch back propagation trainer
  * @author Andrew Guillory gtg008g@mail.gatech.edu
@@ -16,6 +18,10 @@ public class BatchBackPropagationTrainer extends NetworkTrainer {
      * The weight update rule to use
      */
     private WeightUpdateRule rule;
+    private DataSet train;
+    private DataSet test;
+    private static DecimalFormat df = new DecimalFormat("0.000");
+    private int iterations = 1;
     
     /**
      * Make a new back propagation trainer
@@ -31,30 +37,54 @@ public class BatchBackPropagationTrainer extends NetworkTrainer {
         this.rule = rule;
     }
 
-    /**
-     * @see nn.Trainer#train()
-     */
+    public BatchBackPropagationTrainer(DataSet patterns,
+                                       BackPropagationNetwork network,
+                                       GradientErrorMeasure errorMeasure,
+                                       WeightUpdateRule rule, DataSet train, DataSet test) {
+        super(patterns, network, errorMeasure);
+        this.rule = rule;
+        this.train = train;
+        this.test = test;
+    }
+
     public double train() {
         BackPropagationNetwork network =
-            (BackPropagationNetwork) getNetwork();
+                (BackPropagationNetwork) getNetwork();
         GradientErrorMeasure measure =
-            (GradientErrorMeasure) getErrorMeasure();
-        DataSet patterns = getDataSet();
-        double error = 0;
+                (GradientErrorMeasure) getErrorMeasure();
+        DataSet patterns = train;
+        double trainError = 0;
         for (int i = 0; i < patterns.size(); i++) {
             Instance pattern = patterns.get(i);
             network.setInputValues(pattern.getData());
             network.run();
             Instance output = new Instance(network.getOutputValues());
             double[] errors = measure.gradient(output, pattern);
-            error += measure.value(output, pattern);
+            trainError += measure.value(output, pattern);
             network.setOutputErrors(errors);
             network.backpropagate();
         }
-        System.out.println(error);
+        //System.out.println(error/(patterns.size()));
+        //errStr += (error/(patterns.size())) + " ";
+
+        patterns = test;
+        double testError = 0;
+        for (int i = 0; i < patterns.size(); i++) {
+            Instance pattern = patterns.get(i);
+            network.setInputValues(pattern.getData());
+            network.run();
+            Instance output = new Instance(network.getOutputValues());
+            double[] errors = measure.gradient(output, pattern);
+            testError += measure.value(output, pattern);
+            network.setOutputErrors(errors);
+            network.backpropagate();
+        }
+        //System.out.println(testError/(patterns.size()));
+        //testErrStr += (testError/(patterns.size())) + " ";
+        System.out.println("Iteration " + String.format("%04d" , iterations++) + ": " + df.format(trainError / (double) 5021) + " " + df.format(testError / (double) 2152));
         network.updateWeights(rule);
         network.clearError();
-        return error / patterns.size();
+        return trainError / patterns.size();
     }
     
 

@@ -29,7 +29,7 @@ import java.util.Scanner;
  * @author Hannah Lau
  * @version 1.0
  */
-public class NewCoderSurveyIterationsRHCTest {
+public class NewCoderSurveyRHCRestartsTest {
     private static Instance[] instances = initializeInstances();
 
     private static int inputLayer = 4, outputLayer = 1, trainingIterations = 1000;
@@ -52,6 +52,9 @@ public class NewCoderSurveyIterationsRHCTest {
     private static String results = "";
     private static List<List<Double>> oaResultsTrain = new ArrayList<>();
     private static List<List<Double>> oaResultsTest = new ArrayList<>();
+    private static List<Double> oaTrainLasts = new ArrayList<>();
+    private static List<Double> oaTestLasts = new ArrayList<>();
+    
 
     private static DecimalFormat df = new DecimalFormat("0.000");
 
@@ -77,7 +80,7 @@ public class NewCoderSurveyIterationsRHCTest {
         //oa[1] = new SimulatedAnnealing(1E11, .95, nnop[1]);
         //oa[2] = new StandardGeneticAlgorithm(200, 100, 10, nnop[2]);
 
-        for (int k = 0; k < 3; k++) {
+        for (int k = 0; k < 25; k++) {
             new RandomOrderFilter().filter(set);
             TestTrainSplitFilter ttsf = new TestTrainSplitFilter(70);
             ttsf.filter(set);
@@ -91,7 +94,7 @@ public class NewCoderSurveyIterationsRHCTest {
             }
             
             oa[0] = new RandomizedHillClimbing(nnop[0]);
-            //oa[1] = new SimulatedAnnealing(1E11, .95, nnop[1]);
+            //oa[1] = new SimulatedAnnealing(1E12, .65, nnop[1]);
             //oa[2] = new StandardGeneticAlgorithm(200, 100, 10, nnop[2]);
             
             for (int i = 0; i < 1; i++) {
@@ -128,7 +131,7 @@ public class NewCoderSurveyIterationsRHCTest {
         
         System.out.println("\nLinear separator\n");
         
-        for (int i = 0; i < oaResultsTrain.size(); i++) {
+        /*for (int i = 0; i < oaResultsTrain.size(); i++) {
             double trainSum = 0;
             double testSum = 0;
             
@@ -142,7 +145,11 @@ public class NewCoderSurveyIterationsRHCTest {
             
             double first = trainSum / (double) oaResultsTrain.get(i).size();
             double second = testSum / (double) oaResultsTest.get(i).size();
-            System.out.println(df.format(first / (double) 5021) + " " + df.format(second / (double) 2152));
+            System.out.println(df.format(first) + " " + df.format(second));
+        }*/
+        
+        for (int i = 0; i < oaTrainLasts.size(); i++) {
+            System.out.println(df.format(oaTrainLasts.get(i)) + " " + df.format(oaTestLasts.get(i)));
         }
 
         //System.out.println(results);
@@ -153,7 +160,8 @@ public class NewCoderSurveyIterationsRHCTest {
         Instance[] trainInstances = train.getInstances();
         Instance[] testInstances = test.getInstances();
 
-        //double lastError = 0;
+        double lastTrainError = 0;
+        double lastTestError = 0;
         for(int i = 0; i < trainingIterations; i++) {
             oa.train();
 
@@ -166,7 +174,7 @@ public class NewCoderSurveyIterationsRHCTest {
                 Instance output = trainInstances[j].getLabel(), example = new Instance(network.getOutputValues());
                 example.setLabel(new Instance(Double.parseDouble(network.getOutputValues().toString())));
                 trainError += measure.value(output, example);
-                //lastError = error;
+                lastTrainError = trainError;
             }
             
             for (int j = 0; j < testInstances.length; j++) {
@@ -176,12 +184,14 @@ public class NewCoderSurveyIterationsRHCTest {
                 Instance output = testInstances[j].getLabel(), example = new Instance(network.getOutputValues());
                 example.setLabel(new Instance(Double.parseDouble(network.getOutputValues().toString())));
                 testError += measure.value(output, example);
-                //lastError = error;
+                lastTestError = testError;
             }
 
-            System.out.println("Iteration " + String.format("%04d", i) + ": " + df.format(trainError / (double) 5021) + " " + df.format(testError / (double) 2152));
+            System.out.println("Iteration " + String.format("%04d" ,i) + ": " + df.format(trainError) + " " + df.format(testError));
             oaResultsTrain.get(i).add(trainError);
             oaResultsTest.get(i).add(testError);
+            oaTrainLasts.add(trainError);
+            oaTestLasts.add(testError);
         }
         
         //System.out.println(df.format(Double.parseDouble(oaName)) + " " + lastError);
