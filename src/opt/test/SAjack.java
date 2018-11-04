@@ -19,6 +19,8 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.io.FileWriter;
+import java.io.IOException;
 
 /**
  * Implementation of randomized hill climbing, simulated annealing, and genetic algorithm to
@@ -29,9 +31,11 @@ import java.util.Scanner;
  * @version 1.0
  */
 public class SAjack {
+    private static Double[] coolingRates = new Double[]{0.1, 0.5, 0.7, 0.8, 0.9, 0.99};
+
     private static Instance[] instances = initializeInstances();
 
-    private static int inputLayer = 37, outputLayer = 1, trainingIterations = 1000;
+    private static int inputLayer = 37, outputLayer = 1, trainingIterations = 500;
     private static FeedForwardNeuralNetworkFactory factory = new FeedForwardNeuralNetworkFactory();
 
     private static ErrorMeasure measure = new SumOfSquaresError();
@@ -40,17 +44,20 @@ public class SAjack {
 
     //private static FeedForwardNetwork networks[] = new FeedForwardNetwork[100];
     // private static FeedForwardNetwork networks = new FeedForwardNetwork();
-    private static FeedForwardNetwork network;
+    private static FeedForwardNetwork networks[] = new FeedForwardNetwork[coolingRates.length];
+
     //private static NeuralNetworkOptimizationProblem[] nnop = new NeuralNetworkOptimizationProblem[100];
     // private static NeuralNetworkOptimizationProblem[] nnop = new NeuralNetworkOptimizationProblem[3];
-    private static NeuralNetworkOptimizationProblem nnop;
+    private static NeuralNetworkOptimizationProblem[] nnop = new NeuralNetworkOptimizationProblem[coolingRates.length];
 
     //private static OptimizationAlgorithm[] oa = new OptimizationAlgorithm[100];
     // private static OptimizationAlgorithm[] oa = new OptimizationAlgorithm[3];
-    private static OptimizationAlgorithm oa;
+
+    private static OptimizationAlgorithm oa[] = new OptimizationAlgorithm[coolingRates.length];
+
     //private static String[] oaNames = new String[100];
-    //private static String[] oaNames = new String[3];
-    private static String oaName = "SA";
+    private static String[] oaNames = new String[coolingRates.length];
+    // private static String oaNames = "SA";
     private static String results = "";
     private static List<List<Double>> oaResultsTrain = new ArrayList<>();
     private static List<List<Double>> oaResultsTest = new ArrayList<>();
@@ -75,50 +82,134 @@ public class SAjack {
             oaResultsTest.add(new ArrayList<>());
         }
 
-        //oa[0] = new RandomizedHillClimbing(nnop[0]);
-        //oa[1] = new SimulatedAnnealing(1E11, .95, nnop[1]);
-        //oa[2] = new StandardGeneticAlgorithm(200, 100, 10, nnop[2]);
-
         new RandomOrderFilter().filter(set);
         TestTrainSplitFilter ttsf = new TestTrainSplitFilter(70);
         ttsf.filter(set);
         DataSet train = ttsf.getTrainingSet();
         DataSet test = ttsf.getTestingSet();
 
-        network = factory.createClassificationNetwork(
-                new int[] {inputLayer,18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, outputLayer});
-        nnop = new NeuralNetworkOptimizationProblem(train, network, measure);
-        oa = new SimulatedAnnealing(1E11, .2, nnop);
-
-        double start = System.nanoTime(), end, trainingTime, testingTime, correct = 0, incorrect=0;
-        train(oa, network, oaName, train, test);
-        end = System.nanoTime();
-        trainingTime = end-start;
-        trainingTime /= Math.pow(10,9);
-
-        Instance optimalInstance = oa.getOptimal();
-        network.setWeights(optimalInstance.getData());
-
-        double predicted, actual;
-        start = System.nanoTime();
-        for (int j = 0; j < instances.length; j++) {
-            network.setInputValues(instances[j].getData());
-            network.run();
-
-            predicted = Double.parseDouble(instances[j].getLabel().toString());
-            actual = Double.parseDouble(network.getOutputValues().toString());
-
-            double trash = Math.abs(predicted - actual) < 0.5 ? correct++ : incorrect++;
+        for(int i = 0; i < oa.length; i++) {
+            networks[i] = factory.createClassificationNetwork(
+                    new int[] {inputLayer, 37,37,37, outputLayer});
+            nnop[i] = new NeuralNetworkOptimizationProblem(train, networks[i], measure);
         }
 
-        end = System.nanoTime();
-        testingTime = end - start;
-        testingTime /= Math.pow(10, 9);
+        int m = 0;
+        for (double rate : coolingRates){
+          oa[m] = new SimulatedAnnealing(1E11, rate, nnop[m]);
+          oaNames[m] = String.valueOf(rate);
+          m++;
+        }
 
-        results += "\nResults for " + oaName + ": \nCorrectly classified " + correct + " instances." +
-                "\nIncorrectly classified " + incorrect + " instances.\nPercent correctly classified: "
-                + df.format(correct / (correct + incorrect) * 100) + "%\nTraining time: " + df.format(trainingTime)
-                + " seconds\nTesting time: " + df.format(testingTime) + " seconds\n";
+
+        for (int i = 0; i < oa.length; i++) {
+          System.out.println("iteration " + i + ":");
+          double start = System.nanoTime(), end, trainingTime, testingTime, correct = 0, incorrect = 0;
+          train(oa[i], networks[i], oaNames[i], train, test); //trainer.train();
+          end = System.nanoTime();
+          trainingTime = end - start;
+          trainingTime /= Math.pow(10, 9);
+          System.out.println("trained");
+
+          Instance optimalInstance = oa[i].getOptimal();
+          networks[i].setWeights(optimalInstance.getData());
+          System.out.println("setweights");
+
+          double predicted, actual;
+          start = System.nanoTime();
+          for (int j = 0; j < instances.length; j++) {
+            networks[i].setInputValues(instances[j].getData());
+            networks[i].run();
+
+            predicted = Double.parseDouble(instances[j].getLabel().toString());
+            actual = Double.parseDouble(networks[i].getOutputValues().toString());
+
+            double trash = Math.abs(predicted - actual) < 0.5 ? correct++ : incorrect++;
+          }
+          System.out.println("counted correct");
+
+          end = System.nanoTime();
+          testingTime = end - start;
+          testingTime /= Math.pow(10, 9);
+
+          results += "\nResults for " + oaNames[i] + ": \nCorrectly classified " + correct + " instances." +
+                  "\nIncorrectly classified " + incorrect + " instances.\nPercent correctly classified: "
+                  + df.format(correct / (correct + incorrect) * 100) + "%\nTraining time: " + df.format(trainingTime)
+                  + " seconds\nTesting time: " + df.format(testingTime) + " seconds\n";
+
+          System.out.println(results);
+          System.out.println("\nLinear separator\n");
+
+          try{
+            Double coolrate_double = coolingRates[i]*10;
+            FileWriter writer = new FileWriter(new File("SAjack_Results" + Double.toString(coolrate_double.intValue()) + ".csv"));
+            String header = "Iteration, Train Error, Test Error";
+            writer.append(header);
+            for (int ii = 0; ii < oaResultsTrain.size(); ii++) {
+                double trainSum = 0;
+                double testSum = 0;
+
+                for (int j = 0; j < oaResultsTrain.get(ii).size(); j++) {
+                    trainSum += oaResultsTrain.get(ii).get(j);
+                }
+
+                for (int j = 0; j < oaResultsTest.get(ii).size(); j++) {
+                    testSum += oaResultsTest.get(ii).get(j);
+                }
+
+                double first = trainSum / (double) oaResultsTrain.get(ii).size();
+                double second = testSum / (double) oaResultsTest.get(ii).size();
+                // System.out.println(df.format(first) + " " + df.format(second));
+                String data = ii + ", " + first + ", " + second + "\n";
+                writer.append(data);
+            }
+            writer.close();
+          } catch (Exception e){
+            System.out.println("error writing to file");
+          }
+          System.out.println("wrote to file");
+
+        }
+
+        //oa[0] = new RandomizedHillClimbing(nnop[0]);
+        //oa[1] = new SimulatedAnnealing(1E11, .95, nnop[1]);
+        //oa[2] = new StandardGeneticAlgorithm(200, 100, 10, nnop[2]);
+
+
+        // network = factory.createClassificationNetwork(
+        //         new int[] {inputLayer,37, 37, 37, outputLayer});
+        // nnop = new NeuralNetworkOptimizationProblem(train, network, measure);
+        // oa = new SimulatedAnnealing(1E11, .2, nnop);
+
+        // double start = System.nanoTime(), end, trainingTime, testingTime, correct = 0, incorrect=0;
+        // train(oa, network, oaName, train, test);
+        // end = System.nanoTime();
+        // trainingTime = end-start;
+        // trainingTime /= Math.pow(10,9);
+
+        // Instance optimalInstance = oa.getOptimal();
+        // network.setWeights(optimalInstance.getData());
+
+        // double predicted, actual;
+        // start = System.nanoTime();
+        // for (int j = 0; j < instances.length; j++) {
+        //     network.setInputValues(instances[j].getData());
+        //     network.run();
+        //
+        //     predicted = Double.parseDouble(instances[j].getLabel().toString());
+        //     actual = Double.parseDouble(network.getOutputValues().toString());
+        //
+        //     double trash = Math.abs(predicted - actual) < 0.5 ? correct++ : incorrect++;
+        // }
+        //
+        // end = System.nanoTime();
+        // testingTime = end - start;
+        // testingTime /= Math.pow(10, 9);
+        //
+        // results += "\nResults for " + oaName + ": \nCorrectly classified " + correct + " instances." +
+        //         "\nIncorrectly classified " + incorrect + " instances.\nPercent correctly classified: "
+        //         + df.format(correct / (correct + incorrect) * 100) + "%\nTraining time: " + df.format(trainingTime)
+        //         + " seconds\nTesting time: " + df.format(testingTime) + " seconds\n";
 
 
         // for (int k = 0; k < 3; k++) {
@@ -170,8 +261,8 @@ public class SAjack {
         //     }
         // }
 
-        System.out.println(results);
-        System.out.println("\nLinear separator\n");
+        // System.out.println(results);
+        // System.out.println("\nLinear separator\n");
 
         // for (int i = 0; i < oaResultsTrain.size(); i++) {
         //     double trainSum = 0;
@@ -191,6 +282,33 @@ public class SAjack {
         // }
 
         //System.out.println(results);
+
+        // try {
+        //   FileWriter writer = new FileWriter(new File("SAjack_Results.csv"));
+        //   String header = "Iteration, Train Error, Test Error";
+        //   writer.append(header);
+        //   for (int i = 0; i < oaResultsTrain.size(); i++) {
+        //       double trainSum = 0;
+        //       double testSum = 0;
+        //
+        //       for (int j = 0; j < oaResultsTrain.get(i).size(); j++) {
+        //           trainSum += oaResultsTrain.get(i).get(j);
+        //       }
+        //
+        //       for (int j = 0; j < oaResultsTest.get(i).size(); j++) {
+        //           testSum += oaResultsTest.get(i).get(j);
+        //       }
+        //
+        //       double first = trainSum / (double) oaResultsTrain.get(i).size();
+        //       double second = testSum / (double) oaResultsTest.get(i).size();
+        //       // System.out.println(df.format(first) + " " + df.format(second));
+        //       String data = i + ", " + first + ", " + second + "\n";
+        //       writer.append(data);
+        //   }
+        //   writer.close();
+        // } catch (Exception e){
+        //   System.out.println("error writing to file");
+        // }
     }
 
     private static void train(OptimizationAlgorithm oa, FeedForwardNetwork network, String oaName, DataSet train, DataSet test) {
@@ -234,20 +352,20 @@ public class SAjack {
 
     private static Instance[] initializeInstances() {
 
-        double[][][] attributes = new double[7173][][];
+        double[][][] attributes = new double[7729][][];
 
         try {
-            BufferedReader br = new BufferedReader(new FileReader(new File("src/opt/test/2016_New_Coder_Survey_NNRO_Normalized.csv")));
+            BufferedReader br = new BufferedReader(new FileReader(new File("src/opt/test/googlePlayStoreRefined_Normalized.csv")));
 
             for(int i = 0; i < attributes.length; i++) {
                 Scanner scan = new Scanner(br.readLine());
                 scan.useDelimiter(",");
 
                 attributes[i] = new double[2][];
-                attributes[i][0] = new double[4]; // 4 attributes
+                attributes[i][0] = new double[37]; // 37 attributes
                 attributes[i][1] = new double[1];
 
-                for(int j = 0; j < 4; j++)
+                for(int j = 0; j < 37; j++)
                     attributes[i][0][j] = Double.parseDouble(scan.next());
 
                 attributes[i][1][0] = Double.parseDouble(scan.next());
