@@ -20,8 +20,10 @@ import java.util.Scanner;
 public class BatchBackULTrainer {
 
 
-    private final static int inputLayer = 4, hiddenLayer = 1, outputLayer = 3, numRows = 4535;
-    private static final String fileLoc = "src/opt/test/2016_New_Coder_Survey_NNRO_Normalized.csv";
+    // private final static int inputLayer = 4, hiddenLayer = 1, outputLayer = 3, numRows = 4535;
+    private final static int inputLayer = 37, hiddenLayer = 1, outputLayer = 10, numRows = 4535;
+    // private static final String fileLoc = "src/opt/test/2016_New_Coder_Survey_NNRO_Normalized.csv";
+    private static final String fileLoc = "src/opt/test/googlePlayStoreRefined_Normalized.csv";
 
 
     /**

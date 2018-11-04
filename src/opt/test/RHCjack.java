@@ -23,18 +23,18 @@ import java.util.Scanner;
 
 /**
  * Implementation of randomized hill climbing, simulated annealing, and genetic algorithm to
- * find optimal weights to a neural network that is classifying abalone as having either fewer 
- * or more than 15 rings. 
+ * find optimal weights to a neural network that is classifying abalone as having either fewer
+ * or more than 15 rings.
  *
  * @author Hannah Lau
  * @version 1.0
  */
-public class NewCoderSurveyRHC {
+public class RHCjack {
     private static Instance[] instances = initializeInstances();
 
-    private static int inputLayer = 37, outputLayer = 10, trainingIterations = 1000;
+    private static int inputLayer = 37, outputLayer = 1, trainingIterations = 1000;
     private static FeedForwardNeuralNetworkFactory factory = new FeedForwardNeuralNetworkFactory();
-    
+
     private static ErrorMeasure measure = new SumOfSquaresError();
 
     private static DataSet set = new DataSet(instances);
@@ -54,7 +54,7 @@ public class NewCoderSurveyRHC {
     private static List<List<Double>> oaResultsTest = new ArrayList<>();
     private static List<Double> oaTrainLasts = new ArrayList<>();
     private static List<Double> oaTestLasts = new ArrayList<>();
-    
+
 
     private static DecimalFormat df = new DecimalFormat("0.000");
 
@@ -64,13 +64,13 @@ public class NewCoderSurveyRHC {
                 new int[] {inputLayer, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, outputLayer});
             nnop[i] = new NeuralNetworkOptimizationProblem(set, networks[i], measure);
         }*/
-        
+
         /*int m = 0;
         for (double i = 0.01; i <= 1; i += 0.01, m++) {
             oa[m] = new SimulatedAnnealing(1E11, i, nnop[m]);
             oaNames[m] = String.valueOf(i);
         }*/
-        
+
         for (int i = 0; i < trainingIterations; i++) {
             oaResultsTrain.add(new ArrayList<>());
             oaResultsTest.add(new ArrayList<>());
@@ -86,17 +86,17 @@ public class NewCoderSurveyRHC {
             ttsf.filter(set);
             DataSet train = ttsf.getTrainingSet();
             DataSet test = ttsf.getTestingSet();
-            
+
             for(int i = 0; i < oa.length; i++) {
                 networks[i] = factory.createClassificationNetwork(
                         new int[] {inputLayer, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, outputLayer});
                 nnop[i] = new NeuralNetworkOptimizationProblem(train, networks[i], measure);
             }
-            
+
             oa[0] = new RandomizedHillClimbing(nnop[0]);
             //oa[1] = new SimulatedAnnealing(1E12, .65, nnop[1]);
             //oa[2] = new StandardGeneticAlgorithm(200, 100, 10, nnop[2]);
-            
+
             for (int i = 0; i < 1; i++) {
                 double start = System.nanoTime(), end, trainingTime, testingTime, correct = 0, incorrect = 0;
                 train(oa[i], networks[i], oaNames[i], train, test); //trainer.train();
@@ -128,26 +128,26 @@ public class NewCoderSurveyRHC {
                         + " seconds\nTesting time: " + df.format(testingTime) + " seconds\n";
             }
         }
-        
+
         System.out.println("\nLinear separator\n");
-        
+
         for (int i = 0; i < oaResultsTrain.size(); i++) {
             double trainSum = 0;
             double testSum = 0;
-            
+
             for (int j = 0; j < oaResultsTrain.get(i).size(); j++) {
                 trainSum += oaResultsTrain.get(i).get(j);
             }
-            
+
             for (int j = 0; j < oaResultsTest.get(i).size(); j++) {
                 testSum += oaResultsTest.get(i).get(j);
             }
-            
+
             double first = trainSum / (double) oaResultsTrain.get(i).size();
             double second = testSum / (double) oaResultsTest.get(i).size();
             System.out.println(df.format(first) + " " + df.format(second));
         }
-        
+
         /*for (int i = 0; i < oaTrainLasts.size(); i++) {
             System.out.println(df.format(oaTrainLasts.get(i)) + " " + df.format(oaTestLasts.get(i)));
         }*/
@@ -176,11 +176,11 @@ public class NewCoderSurveyRHC {
                 trainError += measure.value(output, example);
                 lastTrainError = trainError;
             }
-            
+
             for (int j = 0; j < testInstances.length; j++) {
                 network.setInputValues(testInstances[j].getData());
                 network.run();
-                
+
                 Instance output = testInstances[j].getLabel(), example = new Instance(network.getOutputValues());
                 example.setLabel(new Instance(Double.parseDouble(network.getOutputValues().toString())));
                 testError += measure.value(output, example);
@@ -193,12 +193,12 @@ public class NewCoderSurveyRHC {
             oaTrainLasts.add(trainError);
             oaTestLasts.add(testError);
         }
-        
+
         //System.out.println(df.format(Double.parseDouble(oaName)) + " " + lastError);
     }
 
     private static Instance[] initializeInstances() {
-        
+
         double[][][] attributes = new double[7173][][];
 
         try {
@@ -210,18 +210,19 @@ public class NewCoderSurveyRHC {
 
                 attributes[i] = new double[2][];
                 attributes[i][0] = new double[37]; // 4 attributes
-                attributes[i][1] = new double[10];
+                attributes[i][1] = new double[1];
 
                 for(int j = 0; j < 37; j++)
                     attributes[i][0][j] = Double.parseDouble(scan.next());
 
-                for (int j= 0; j < 10 ; j++)
+                for (int j= 0; j < 1 ; j++)
                 	attributes[i][1][j] = Double.parseDouble(scan.next());
 
             }
         }
         catch(Exception e) {
             e.printStackTrace();
+            System.out.println("error reading file");
         }
 
         Instance[] instances = new Instance[attributes.length];
