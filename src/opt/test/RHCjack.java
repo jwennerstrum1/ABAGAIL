@@ -209,13 +209,15 @@ public class NewCoderSurveyRHC {
                 scan.useDelimiter(",");
 
                 attributes[i] = new double[2][];
-                attributes[i][0] = new double[4]; // 4 attributes
-                attributes[i][1] = new double[1];
+                attributes[i][0] = new double[37]; // 4 attributes
+                attributes[i][1] = new double[10];
 
-                for(int j = 0; j < 4; j++)
+                for(int j = 0; j < 37; j++)
                     attributes[i][0][j] = Double.parseDouble(scan.next());
 
-                attributes[i][1][0] = Double.parseDouble(scan.next());
+                for (int j= 0; j < 10 ; j++)
+                	attributes[i][1][j] = Double.parseDouble(scan.next());
+
             }
         }
         catch(Exception e) {
