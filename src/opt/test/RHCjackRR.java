@@ -85,17 +85,25 @@ public class RHCjackRR {
         //oa[1] = new SimulatedAnnealing(1E11, .95, nnop[1]);
         //oa[2] = new StandardGeneticAlgorithm(200, 100, 10, nnop[2]);
 
-        for (int k = 0; k < 15; k++) {
-            new RandomOrderFilter().filter(set);
-            TestTrainSplitFilter ttsf = new TestTrainSplitFilter(70);
-            ttsf.filter(set);
-            DataSet train = ttsf.getTrainingSet();
-            DataSet test = ttsf.getTestingSet();
+        // previously was inside for loop:
+        network = factory.createClassificationNetwork(
+            new int[] {inputLayer, 37, 37, 37, outputLayer});
 
-            network = factory.createClassificationNetwork(
-                new int[] {inputLayer, 37, 37, 37, outputLayer});
-            nnop = new NeuralNetworkOptimizationProblem(train, network, measure);
-            oa = new RandomizedHillClimbing(nnop);
+        Instance optimalInstanceOverall = null;
+        double optimalAccuracy = 0; //correct / (correct + incorrect) * 100)
+        double[] accuracies = new double[15];
+
+
+        for (int k = 0; k < 15; k++) {
+                new RandomOrderFilter().filter(set);
+                TestTrainSplitFilter ttsf = new TestTrainSplitFilter(70);
+                ttsf.filter(set);
+                DataSet train = ttsf.getTrainingSet();
+                DataSet test = ttsf.getTestingSet();
+
+                nnop = new NeuralNetworkOptimizationProblem(train, network, measure);
+
+                oa = new RandomizedHillClimbing(nnop);
 
             double start = System.nanoTime(), end, trainingTime, testingTime, correct = 0, incorrect = 0;
             train(oa, network, oaName, train, test); //trainer.train();
@@ -117,6 +125,16 @@ public class RHCjackRR {
 
                 double trash = Math.abs(predicted - actual) < 0.5 ? correct++ : incorrect++;
             }
+
+            double accuracy = correct/(correct+incorrect);
+
+            //Look for new optimal instance
+            if (accuracy > optimalAccuracy){
+                    optimalAccuracy = accuracy;
+                    optimalInstanceOverall = optimalInstance;
+            }
+            accuracies[k] = accuracy;
+
             end = System.nanoTime();
             testingTime = end - start;
             testingTime /= Math.pow(10, 9);
@@ -199,16 +217,22 @@ public class RHCjackRR {
               System.out.println("Error printing results");
               System.exit(0);
             }
-
         }
 
-
-
+        // try {
+        //         String fileName = "RHCjackRR_ResultsExtended.csv");
+        //         FileWriter writer = new FileWriter(new File(fileName));
+        //         String header = "Iteration, lastTestError, lastTrainError";
+        //         for (int i = 0; i < oaResultsTest.
+        // }
 
 
         for (int i = 0; i < oaTrainLasts.size(); i++) {
             System.out.println(df.format(oaTrainLasts.get(i)) + " " + df.format(oaTestLasts.get(i)));
         }
+
+
+
 
         //System.out.println(results);
     }
@@ -234,6 +258,8 @@ public class RHCjackRR {
                 trainError += measure.value(output, example);
                 lastTrainError = trainError;
             }
+            //Normalizing?
+            trainError /= trainInstances.length;
 
             for (int j = 0; j < testInstances.length; j++) {
                 network.setInputValues(testInstances[j].getData());
@@ -244,6 +270,8 @@ public class RHCjackRR {
                 testError += measure.value(output, example);
                 lastTestError = testError;
             }
+            //Normalizing?
+            testError /= testInstances.length;
 
             System.out.println("Iteration " + String.format("%04d" ,i) + ": " + df.format(trainError) + " " + df.format(testError));
             oaResultsTrain.get(i).add(trainError);

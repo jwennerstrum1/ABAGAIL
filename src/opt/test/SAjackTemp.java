@@ -30,8 +30,9 @@ import java.io.IOException;
  * @author Hannah Lau
  * @version 1.0
  */
-public class SAjack {
-    private static Double[] coolingRates = new Double[]{0.1, 0.5, 0.7, 0.8, 0.9, 0.99};
+public class SAjackTemp {
+    private static double coolingRate = 0.5;
+    private static Double[] temps = new Double[]{1E3, 1E6, 1E9, 1E10, 1E11, 1E12};
 
     private static Instance[] instances = initializeInstances();
 
@@ -44,19 +45,19 @@ public class SAjack {
 
     //private static FeedForwardNetwork networks[] = new FeedForwardNetwork[100];
     // private static FeedForwardNetwork networks = new FeedForwardNetwork();
-    private static FeedForwardNetwork networks[] = new FeedForwardNetwork[coolingRates.length];
+    private static FeedForwardNetwork networks[] = new FeedForwardNetwork[temps.length];
 
     //private static NeuralNetworkOptimizationProblem[] nnop = new NeuralNetworkOptimizationProblem[100];
     // private static NeuralNetworkOptimizationProblem[] nnop = new NeuralNetworkOptimizationProblem[3];
-    private static NeuralNetworkOptimizationProblem[] nnop = new NeuralNetworkOptimizationProblem[coolingRates.length];
+    private static NeuralNetworkOptimizationProblem[] nnop = new NeuralNetworkOptimizationProblem[temps.length];
 
     //private static OptimizationAlgorithm[] oa = new OptimizationAlgorithm[100];
     // private static OptimizationAlgorithm[] oa = new OptimizationAlgorithm[3];
 
-    private static OptimizationAlgorithm oa[] = new OptimizationAlgorithm[coolingRates.length];
+    private static OptimizationAlgorithm oa[] = new OptimizationAlgorithm[temps.length];
 
     //private static String[] oaNames = new String[100];
-    private static String[] oaNames = new String[coolingRates.length];
+    private static String[] oaNames = new String[temps.length];
     // private static String oaNames = "SA";
     private static String results = "";
     private static List<List<Double>> oaResultsTrain = new ArrayList<>();
@@ -95,9 +96,9 @@ public class SAjack {
         }
 
         int m = 0;
-        for (double rate : coolingRates){
-          oa[m] = new SimulatedAnnealing(1E11, rate, nnop[m]);
-          oaNames[m] = String.valueOf(rate);
+        for (double temp : temps){
+          oa[m] = new SimulatedAnnealing(temp, coolingRate, nnop[m]);
+          oaNames[m] = String.valueOf(temp);
           m++;
         }
 
@@ -141,8 +142,8 @@ public class SAjack {
           System.out.println("\nLinear separator\n");
 
           try{
-            Double coolrate_double = coolingRates[i]*100;
-            FileWriter writer = new FileWriter(new File("SAjack_Results" + Integer.toString(coolrate_double.intValue()) + ".csv"));
+            Double tempValue = temps[i] / 1E3;
+            FileWriter writer = new FileWriter(new File("SAjack_ResultsTemp" + Integer.toString(tempValue.intValue()) + "e3.csv"));
             String header = "Iteration, Train Error, Test Error\n";
             writer.append(header);
             for (int ii = 0; ii < oaResultsTrain.size(); ii++) {
