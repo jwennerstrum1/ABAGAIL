@@ -146,20 +146,24 @@ public class SAjack {
             String header = "Iteration, Train Error, Test Error\n";
             writer.append(header);
             for (int ii = 0; ii < oaResultsTrain.size(); ii++) {
-                double trainSum = 0;
-                double testSum = 0;
-
-                for (int j = 0; j < oaResultsTrain.get(ii).size(); j++) {
-                    trainSum += oaResultsTrain.get(ii).get(j);
-                }
-
-                for (int j = 0; j < oaResultsTest.get(ii).size(); j++) {
-                    testSum += oaResultsTest.get(ii).get(j);
-                }
-
-                double first = trainSum / (double) oaResultsTrain.get(ii).size();
-                double second = testSum / (double) oaResultsTest.get(ii).size();
+                // double trainSum = 0;
+                // double testSum = 0;
+                //
+                // for (int j = 0; j < oaResultsTrain.get(ii).size(); j++) {
+                //     trainSum += oaResultsTrain.get(ii).get(j);
+                // }
+                //
+                // for (int j = 0; j < oaResultsTest.get(ii).size(); j++) {
+                //     testSum += oaResultsTest.get(ii).get(j);
+                // }
+                //
+                // double first = trainSum / (double) oaResultsTrain.get(ii).size();
+                // double second = testSum / (double) oaResultsTest.get(ii).size();
                 // System.out.println(df.format(first) + " " + df.format(second));
+
+                double first = oaResultsTrain.get(ii).get(i);
+                double second = oaResultsTest.get(ii).get(i);
+
                 String data = ii + ", " + first + ", " + second + "\n";
                 writer.append(data);
             }

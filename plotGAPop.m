@@ -1,15 +1,15 @@
-%% plot Generic Algorithm Mate
+%% plot Generic Algorithm Pop
 clear
 close all
-mateVals = [25,  50, 75, 100];
+popVals = [50,  100, 200, 400];
 
-baseFileName = 'GAjack_Results_Mate';
+baseFileName = 'GAjack_Results_Pop';
 
 % files = {};
 legendVals = {};
-for i = 1:length(mateVals)
-    file = [baseFileName, num2str(mateVals(i)), '.csv'];
-    str = sprintf('Mate Number = %d', mateVals(i));
+for i = 1:length(popVals)
+    file = [baseFileName, num2str(popVals(i)), '.csv'];
+    str = sprintf('Population Size = %d', popVals(i));
     legendVals{i} = str;
     num = xlsread(file);
     iterations = num(2:end,1);

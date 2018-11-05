@@ -14,20 +14,20 @@ for i = 1:15
     testError = num(2:end, 3);
     figure(1);
     hold on
-    plot(iterations,trainingError);
+    plot(iterations,trainingError, 'LineWidth', 2);
     figure(2);
     hold on
-    plot(iterations, testError);
+    plot(iterations, testError, 'LineWidth', 2);
 end
 figure(1)
-xlabel('Iterations');
-ylabel('Error');
-legend(restart);
+xlabel('Iterations', 'Interpreter', 'latex', 'FontSize', 14);
+ylabel('Error', 'Interpreter', 'latex', 'FontSize', 14);
+legend(restart, 'Interpreter', 'latex', 'FontSize', 10);
 
 figure(2)
-xlabel('Iterations');
-ylabel('Error');
-legend(restart);
+xlabel('Iterations', 'Interpreter', 'latex', 'FontSize', 14);
+ylabel('Error', 'Interpreter', 'latex', 'FontSize', 14);
+legend(restart, 'Interpreter', 'latex', 'FontSize', 10);
 
 % 
 % num = xlsread(files{1});
@@ -37,6 +37,17 @@ legend(restart);
 % p1 = plot(iterations, trainingError, 'b', iterations, testError, 'r');
 
 
+num = xlsread('RHCjackRR_Results_Accuracies.csv');
+RestartNum = num(:,1);
+RestartTitle = {};
+for i = 1 : length(RestartNum)
+    RestartTitle{i} = ['Restart ', num2str(RestartNum(i))];
+end
+Restarts= categorical(RestartTitle);
+Accuracy = num(:,2);
+figure(3)
+bar(Restarts, Accuracy);
+title('Accuracy (%) vs Restart Iteration')
 
 
 

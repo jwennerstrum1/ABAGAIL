@@ -34,7 +34,7 @@ import java.io.IOException;
 public class RHCjackRR {
     private static Instance[] instances = initializeInstances();
 
-    private static int inputLayer = 37, outputLayer = 1, trainingIterations = 1000;
+    private static int inputLayer = 37, outputLayer = 1, trainingIterations = 500;
     private static FeedForwardNeuralNetworkFactory factory = new FeedForwardNeuralNetworkFactory();
 
     private static ErrorMeasure measure = new SumOfSquaresError();
@@ -195,19 +195,22 @@ public class RHCjackRR {
               String header = "Iteration, Train Error, Test Error";
               writer.append(header);
               for (int i = 0; i < oaResultsTrain.size(); i++) {
-                  double trainSum = 0;
-                  double testSum = 0;
+                      double first = oaResultsTrain.get(i).get(k);
+                      double second = oaResultsTest.get(i).get(k);
 
-                  for (int j = 0; j < oaResultsTrain.get(i).size(); j++) {
-                      trainSum += oaResultsTrain.get(i).get(j);
-                  }
-
-                  for (int j = 0; j < oaResultsTest.get(i).size(); j++) {
-                      testSum += oaResultsTest.get(i).get(j);
-                  }
-
-                  double first = trainSum / (double) oaResultsTrain.get(i).size();
-                  double second = testSum / (double) oaResultsTest.get(i).size();
+                  // double trainSum = 0;
+                  // double testSum = 0;
+                  //
+                  // for (int j = 0; j < oaResultsTrain.get(i).size(); j++) {
+                  //     trainSum += oaResultsTrain.get(i).get(j);
+                  // }
+                  //
+                  // for (int j = 0; j < oaResultsTest.get(i).size(); j++) {
+                  //     testSum += oaResultsTest.get(i).get(j);
+                  // }
+                  //
+                  // double first = trainSum / (double) oaResultsTrain.get(i).size();
+                  // double second = testSum / (double) oaResultsTest.get(i).size();
                   // System.out.println(df.format(first) + " " + df.format(second));
                   String data = i + ", " + first + ", " + second + "\n";
                   writer.append(data);
@@ -217,6 +220,19 @@ public class RHCjackRR {
               System.out.println("Error printing results");
               System.exit(0);
             }
+        }
+        try{
+                String fileName = "RHCjackRR_Results_Accuracies.csv";
+                FileWriter writer= new FileWriter(new File(fileName));
+                String header = "Iteratrion, Accuracy\n";
+                for (int i = 0; i < accuracies.length; i++){
+                        String data =  i + ", " + Double.toString(accuracies[i]) + "\n";
+                        writer.append(data);
+                }
+                writer.close();
+        }catch (Exception e){
+                System.out.println("Error printing accuracies");
+                System.exit(0);
         }
 
         // try {

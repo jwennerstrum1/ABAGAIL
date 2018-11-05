@@ -17,18 +17,18 @@ for i = 1:length(temps)
     testError = num(2:end, 3);
     figure(1);
     hold on
-    plot(iterations,trainingError);
+    plot(iterations,trainingError, 'LineWidth', 2);
     figure(2);
     hold on
-    plot(iterations, testError);
+    plot(iterations, testError, 'LineWidth', 2);
 end
 figure(1)
-xlabel('Iterations');
-ylabel('Error');
-legend(legendVals);
+xlabel('Iterations', 'Interpreter', 'latex', 'FontSize', 14);
+ylabel('Error', 'Interpreter', 'latex', 'FontSize', 14);
+legend(legendVals, 'Interpreter', 'latex', 'FontSize', 14);
 
 figure(2)
-xlabel('Iterations');
-ylabel('Error');
-legend(legendVals);
+xlabel('Iterations', 'Interpreter', 'latex', 'FontSize', 14);
+ylabel('Error', 'Interpreter', 'latex', 'FontSize', 14);
+legend(legendVals, 'Interpreter', 'latex', 'FontSize', 14);
 

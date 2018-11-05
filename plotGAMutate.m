@@ -1,15 +1,15 @@
-%% plot Generic Algorithm Mate
+%% plot Generic Algorithm Mutate
 clear
 close all
-mateVals = [25,  50, 75, 100];
+mutateVals = [25,  50, 75, 100];
 
-baseFileName = 'GAjack_Results_Mate';
+baseFileName = 'GAjack_Results_Mutate';
 
 % files = {};
 legendVals = {};
-for i = 1:length(mateVals)
-    file = [baseFileName, num2str(mateVals(i)), '.csv'];
-    str = sprintf('Mate Number = %d', mateVals(i));
+for i = 1:length(mutateVals)
+    file = [baseFileName, num2str(mutateVals(i)), '.csv'];
+    str = sprintf('Mutation value = %d', mutateVals(i));
     legendVals{i} = str;
     num = xlsread(file);
     iterations = num(2:end,1);
