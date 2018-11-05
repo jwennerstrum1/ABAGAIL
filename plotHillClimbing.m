@@ -23,11 +23,13 @@ figure(1)
 xlabel('Iterations', 'Interpreter', 'latex', 'FontSize', 14);
 ylabel('Error', 'Interpreter', 'latex', 'FontSize', 14);
 legend(restart, 'Interpreter', 'latex', 'FontSize', 10);
+title('Training Error vs Iterations', 'Interpreter', 'latex', 'FontSize', 14);
 
 figure(2)
 xlabel('Iterations', 'Interpreter', 'latex', 'FontSize', 14);
 ylabel('Error', 'Interpreter', 'latex', 'FontSize', 14);
 legend(restart, 'Interpreter', 'latex', 'FontSize', 10);
+title('Test Error vs Iterations', 'Interpreter', 'latex', 'FontSize', 14);
 
 % 
 % num = xlsread(files{1});
@@ -47,7 +49,7 @@ Restarts= categorical(RestartTitle);
 Accuracy = num(:,2);
 figure(3)
 bar(Restarts, Accuracy);
-title('Accuracy (%) vs Restart Iteration')
+title('Accuracy (%) vs Restart Iteration', 'FontSize', 14)
 
 
 

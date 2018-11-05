@@ -26,9 +26,10 @@ figure(1)
 xlabel('Iterations', 'Interpreter', 'latex', 'FontSize', 14);
 ylabel('Error', 'Interpreter', 'latex', 'FontSize', 14);
 legend(legendVals, 'Interpreter', 'latex', 'FontSize', 14);
+title('Error vs Iteration','Interpreter', 'latex', 'FontSize', 14);
 
 figure(2)
 xlabel('Iterations', 'Interpreter', 'latex', 'FontSize', 14);
 ylabel('Error', 'Interpreter', 'latex', 'FontSize', 14);
 legend(legendVals, 'Interpreter', 'latex', 'FontSize', 14);
-
+title('Error vs Iteration','Interpreter', 'latex', 'FontSize', 14);
