@@ -44,9 +44,9 @@ title('Fitness value vs. Iterations (1,000)', 'Interpreter', 'latex', 'FontSize'
 
 figure(2)
 xlabel('Iterations',  'Interpreter', 'latex', 'FontSize', 14);
-ylabel('Error',  'Interpreter', 'latex', 'FontSize', 14);
+ylabel('Time',  'Interpreter', 'latex', 'FontSize', 14);
 legend(Algorithms, 'FontSize', 14, 'Interpreter', 'latex');
-title('Fitness value vs. Iterations (1,000)', 'Interpreter', 'latex', 'FontSize', 14);
+title('Time vs. Iterations (1,000)', 'Interpreter', 'latex', 'FontSize', 14);
 
 
 

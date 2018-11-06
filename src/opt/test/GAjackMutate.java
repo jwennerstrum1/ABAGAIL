@@ -135,7 +135,7 @@ public class GAjackMutate {
             try{
                     Integer mutateValue = mutate[k];
                     FileWriter writer = new FileWriter(new File("GAjack_Results_Mutate" + Integer.toString(mutateValue) + ".csv"));
-                    String header = "Iteration, Train Error, Test Error\n";
+                    String header = "Iteration, Train Error, Test Error, TrainingTime," + df.format(trainingTime)+"\n";
                     writer.append(header);
                     for (int ii=0; ii<oaResultsTrain.size(); ii++){
                             double first = oaResultsTrain.get(ii).get(k);

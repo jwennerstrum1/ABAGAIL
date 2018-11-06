@@ -135,7 +135,7 @@ public class GAjackPop {
             try{
                     Integer popValue = pop[k];
                     FileWriter writer = new FileWriter(new File("GAjack_Results_Pop" + Integer.toString(popValue) + ".csv"));
-                    String header = "Iteration, Train Error, Test Error\n";
+                    String header = "Iteration, Train Error, Test Error, TrainingTime," + df.format(trainingTime)+"\n";
                     writer.append(header);
                     for (int ii=0; ii<oaResultsTrain.size(); ii++){
 

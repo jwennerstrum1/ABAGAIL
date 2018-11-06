@@ -144,7 +144,7 @@ public class SAjackTemp {
           try{
             Double tempValue = temps[i] / 1E3;
             FileWriter writer = new FileWriter(new File("SAjack_ResultsTemp" + Integer.toString(tempValue.intValue()) + "e3.csv"));
-            String header = "Iteration, Train Error, Test Error\n";
+            String header = "Iteration, Train Error, Test Error, TrainingTime," + df.format(trainingTime)+"\n";
             writer.append(header);
             for (int ii = 0; ii < oaResultsTrain.size(); ii++) {
                 // double trainSum = 0;

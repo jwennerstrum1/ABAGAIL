@@ -192,7 +192,7 @@ public class RHCjackRR {
             try {
               String fileName = "RHCjackRR_Results" + Integer.toString(k+1)+".csv";
               FileWriter writer = new FileWriter(new File(fileName));
-              String header = "Iteration, Train Error, Test Error";
+              String header = "Iteration, Train Error, Test Error, TrainingTime," + df.format(trainingTime)+"\n";
               writer.append(header);
               for (int i = 0; i < oaResultsTrain.size(); i++) {
                       double first = oaResultsTrain.get(i).get(k);

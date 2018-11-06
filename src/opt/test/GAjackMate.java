@@ -132,7 +132,7 @@ public class GAjackMate {
             try{
                     Integer mateValue = mate[k];
                     FileWriter writer = new FileWriter(new File("GAjack_Results_Mate" + Integer.toString(mateValue) + ".csv"));
-                    String header = "Iteration, Train Error, Test Error\n";
+                    String header = "Iteration, Train Error, Test Error, TrainingTime," + df.format(trainingTime)+"\n";
                     writer.append(header);
                     for (int ii=0; ii<oaResultsTrain.size(); ii++){
                             // double trainSum = 0;
