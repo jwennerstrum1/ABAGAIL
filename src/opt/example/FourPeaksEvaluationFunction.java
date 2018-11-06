@@ -14,7 +14,7 @@ public class FourPeaksEvaluationFunction implements EvaluationFunction {
      * The t value
      */
     private int t;
-    
+
     /**
      * Make a new four peaks function
      * @param t the t value
@@ -44,6 +44,6 @@ public class FourPeaksEvaluationFunction implements EvaluationFunction {
         }
         return Math.max(tail, head) + r;
     }
-    
-    
+
+
 }

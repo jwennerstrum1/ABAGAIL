@@ -26,13 +26,13 @@ figure(1)
 xlabel('Iterations', 'Interpreter', 'latex', 'FontSize', 14);
 ylabel('Error', 'Interpreter', 'latex', 'FontSize', 14);
 legend(legendVals, 'Interpreter', 'latex', 'FontSize', 14);
-title('Train Error vs. Iterations for Varying Mate Values', 'Interpreter', 'latex', 'FontSize', 14);
+title('Train Error vs. Iterations for Varying Mutate Values', 'Interpreter', 'latex', 'FontSize', 14);
 
 figure(2)
 xlabel('Iterations',  'Interpreter', 'latex', 'FontSize', 14);
 ylabel('Error',  'Interpreter', 'latex', 'FontSize', 14);
 legend(legendVals, 'FontSize', 14, 'Interpreter', 'latex');
-title('Test Error vs. Iterations for Varying Mate Values', 'Interpreter', 'latex', 'FontSize', 14);
+title('Test Error vs. Iterations for Varying Mutate Values', 'Interpreter', 'latex', 'FontSize', 14);
 
 
 

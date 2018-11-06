@@ -51,5 +51,24 @@ figure(3)
 bar(Restarts, Accuracy);
 title('Accuracy (%) vs Restart Iteration', 'FontSize', 14)
 
+y = zeros(1, length(Accuracy));
+y(1) = Accuracy(1);
+for i = 2 : length(y)
+    temp = Accuracy(i);
+    if temp < y(i-1)
+        y(i) = temp;
+    else
+        y(i) = y(i-1);
+    end
+end
+
+%%
+figure(4)
+plot([1:length(y)], y, 'LineWidth', 2);
+xlabel('Number of Random Restarts', 'Interpreter', 'latex', 'FontSize', 14);
+ylabel('Error', 'Interpreter', 'latex', 'FontSize', 14);
+title('Error vs Number of Random Restarts', 'Interpreter', 'latex', 'FontSize', 14);
+
+
 
 
